@@ -1,7 +1,7 @@
 // Written by scripts/generate-release-notes.ts from release-notes/*.md, at each build: not to be edited by hand.
 
 /** The version of the addon this build is. */
-export const ADDON_VERSION = "2.8.1";
+export const ADDON_VERSION = "2.8.2";
 
 export interface ReleaseNote {
     version: string;
@@ -15,6 +15,7 @@ export interface ReleaseNote {
 
 /** Every release, the newest first. */
 export const RELEASE_NOTES: ReleaseNote[] = [
+    { version: "2.8.2", date: "2026-11-09", hasNew: false, text: "|cffffd100Fixed|r\n\n• A few more places no longer run into a Lua error when the game hides whether a frame is showing: the action bars, the gamepad bars and glows beside a button." },
     { version: "2.8.1", date: "2026-11-09", hasNew: false, text: "|cffffd100Fixed|r\n\n• No more Lua error at login or with the button scan when aura frames are around, from the game or from addons like Plater.\n• The X now closes the table and the other windows during a fight too." },
     { version: "2.8.0", date: "2026-11-08", hasNew: true, text: "|cffffd100New|r\n\n• Welcome window, once for each character: a short introduction and a scan that lights your action buttons, so you can see the addon finds them. Open it any time with /gb welcome, or from Esc > Options > AddOns. /gb scan runs the scan alone.\n• Bar addons the addon doesn't know are now detected automatically.\n• Messages can be shaped: each row's gear (Advanced view of /gb) sets what its message says, its color and how long it stays. You can show the type, the spell or item, both, or your own words.\n• New Messages section in the Options page: text size, vertical position, zoom in and out, two kinds of pulse, and one line per type.\n• Sharpening stones and other items you add as Weapon buffs now show the item's name in the table, and work on either hand.\n• Rainbow when AFK, off by default.\n• New sound: Ready check.\n• Alpha: Execute glows in Defensive Stance on a low target, and can show a message. It can't play a sound.\n• Alpha: Arcane Missiles glows when it's free (Missile Barrage, Clearcasting), and Shadow Bolt when it's instant (Nightfall).\n\nAlpha rows are marked in the table. If one doesn't work for you, switch it off in the Enabled column and let me know.\n\n|cffffd100Changed|r\n\n• Stay quiet in towns and inns is now off by default for new characters. Existing settings stay as they were.\n• A macro with /use 16 or /use 17 now glows only for that weapon.\n\n|cffffd100Fixed|r\n\n• A poison or stone of rank 2 or higher ignored the settings of its row, such as When.\n• Poisons and stones inside macros are now recognized.\n• Weapon buff reminders no longer glow when you have no weapon in your hand." },
     { version: "2.7.0", date: "2026-11-07", hasNew: true, text: "|cffffd100New|r\n\n• Shield Block glows for warriors in a fight while it is not up. It comes back when its 7 seconds are over, or as soon as your blocks have used it up and it is off cooldown. It glows only when you can use it: in Defensive Stance, with a shield and enough rage.\n\n|cffffd100Changed|r\n\n• A missing buff glows only when you can cast it now and it is off its cooldown. This goes for the buffs you added too.\n\n|cffffd100Fixed|r\n\n• Revenge now glows after a normal block too, not only after a dodge, a parry or a full block." },

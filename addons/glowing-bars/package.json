@@ -1,6 +1,6 @@
 {
   "name": "glowing-bars",
-  "version": "2.8.1",
+  "version": "2.8.2",
   "description": "World of Warcraft: Forever addon reminding of missing buffs, weapon buffs and party buffs, and of buffs missing from the action bars",
   "private": true,
   "license": "MIT",
