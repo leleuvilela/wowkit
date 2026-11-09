@@ -25,6 +25,7 @@ in the code. When the client changes, a row here may stop being true.
 | 14 | **A group version on you is a different spell** (Prayer of Fortitude is not Power Word: Fortitude). | Buffs that replace each other are one *buff category*, listed by spell ID and matched by name (the client's own, so it holds in any language). | `knowledge/buff-categories.constants.ts` |
 | 15 | **Blizzard adds its own functions to Lua's `string`, `math` and `table`** (`string.trim`, `math.round`...). | The boundary check treats those as the game's, not as plain Lua. | `scripts/check-boundary.ts` |
 | 16 | **The gamepad bars stay loaded outside gamepad mode**, hidden, and their slots (195 on) may still hold old spells (a druid's Rank 1 Wrath on its bear page). | Their buttons are mapped only while the gamepad bars are shown; the gamepad mode coming or going maps the bars again. | `listGamepadButtons` in `packages/@wowkit/wow/src/gamepad-buttons.ts`, `countAddonButtons` in `packages/@wowkit/wow/src/bar-refresh.service.ts` |
+| 17 | **A frame's visibility can be a secret boolean** (a nameplate, in combat). `not frame:IsVisible()` raises "attempt to perform boolean test on a secret boolean value" and stops the scan of every frame. | An unreadable answer counts as not showing. The same goes for a secret name, type or attribute on that walk. | `isShown` in `packages/@wowkit/wow/src/button-search.service.ts` |
 
 ## Not the game's fault, but just as easy to break
 

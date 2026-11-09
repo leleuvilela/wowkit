@@ -13,7 +13,7 @@ import { createLineGlow } from "./utils/glow-line.utils";
 import { BORDER_SCALE, createSoftFrame } from "./utils/glow-border.utils";
 import { createStillFades } from "./utils/glow-fade.utils";
 import type { ActionBarsService } from "./action-bars.service";
-import { tryCall } from "./utils/protected-call.utils";
+import { attempt, tryCall } from "./utils/protected-call.utils";
 import { getReadable } from "./utils/secret-value.utils";
 import type { HiddenAlpha } from "./value-curves.service";
 
@@ -176,7 +176,7 @@ export class GlowService {
     private showOverlay(entry: Overlay, button: ActionButton): void {
         entry.isWanted = true;
         // A glow beside its button shows only while the button does (see trackButton)
-        if (entry.isBeside === true && !button.IsVisible()) return;
+        if (entry.isBeside === true && getReadable(attempt(() => button.IsVisible())) !== true) return;
         if (entry.fadeOut?.IsPlaying() === true) entry.fadeOut.Stop();
         else entry.frame.Show();
     }

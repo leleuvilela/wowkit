@@ -1,6 +1,8 @@
 // Finds the action buttons of bar addons the addon has no list of names for: every frame of the game is looked at, a few a
 // frame so the game does not stutter, and what is an action button by its own say joins the bars, as a button of no numbered
 // bar. It runs at each login, so a new bar addon just works; the buttons of the known bars are left to their list.
+// A frame may answer with a secret value (a nameplate's visibility, in combat). Testing that boolean raises and stops the
+// scan, so an unreadable answer counts as "not this".
 import type { OnFirstLogin } from "@wowkit/core";
 import type { ActionBarsService } from "./action-bars.service";
 import { BARS, listAddonButtonNames } from "./bar-names";
@@ -75,9 +77,9 @@ export class ButtonSearchService implements OnFirstLogin {
         this.getKnownNames();
         for (const name of this.orderedNames) {
             const button = (_G as unknown as { [name: string]: ActionButton | undefined })[name];
-            if (button !== undefined && button.IsVisible()) buttons.push(button);
+            if (button !== undefined && this.isShown(button)) buttons.push(button);
         }
-        for (const button of this.found) if (button.IsVisible()) buttons.push(button);
+        for (const button of this.found) if (this.isShown(button)) buttons.push(button);
         return buttons;
     }
 
@@ -97,7 +99,7 @@ export class ButtonSearchService implements OnFirstLogin {
     }
 
     private isStanceButton(button: ActionButton): boolean {
-        const name = button.GetName() ?? "";
+        const name = getReadable(attempt(() => button.GetName())) ?? "";
         return STANCE_PREFIXES.some((prefix) => string.sub(name, 1, prefix.length) === prefix);
     }
 
@@ -106,23 +108,24 @@ export class ButtonSearchService implements OnFirstLogin {
         let count = 0;
         for (const name of this.orderedNames) {
             const button = (_G as unknown as { [name: string]: ActionButton | undefined })[name];
-            if (button !== undefined && !button.IsVisible()) count += 1;
+            if (button !== undefined && !this.isShown(button)) count += 1;
         }
-        for (const button of this.found) if (!button.IsVisible()) count += 1;
+        for (const button of this.found) if (!this.isShown(button)) count += 1;
         return count;
     }
 
     /** Does it show, and say it is an action button, and is on no list? A frame that keeps its answers secret (Blizzard's aura buttons) is none. */
     private isUnknownActionButton(frame: Frame): boolean {
-        if (
-            getReadable(attempt(() => frame.IsForbidden())) === true ||
-            getReadable(attempt(() => frame.IsVisible())) !== true ||
-            getReadable(attempt(() => frame.IsObjectType("Button"))) !== true
-        )
-            return false;
+        if (getReadable(attempt(() => frame.IsForbidden())) !== false || !this.isShown(frame)) return false;
+        if (getReadable(attempt(() => frame.IsObjectType("Button"))) !== true) return false;
         const name = getReadable(attempt(() => frame.GetName()));
         if ((name !== undefined && this.getKnownNames().has(name)) || this.registry.isRegistered(frame as ActionButton)) return false;
         return getReadable(attempt(() => (frame as ActionButton).GetAttribute("type"))) === "action";
+    }
+
+    /** Shown, as a plain boolean. A secret answer is not: testing it raises and stops the scan. */
+    private isShown(frame: Frame): boolean {
+        return getReadable(attempt(() => frame.IsVisible())) === true;
     }
 
     private getKnownNames(): LuaSet<string> {
