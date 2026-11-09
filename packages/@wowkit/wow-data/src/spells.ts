@@ -337,6 +337,8 @@ export const Shaman = {
 };
 export const Mage = {
     ArcaneIntellect: 1459,
+    // Rank 1 and the higher ranks have different names in some client languages.
+    ArcaneIntellectRanks: [1459, 1460, 1461, 10156, 10157],
     MageArmor: 6117,
     IceArmor: 7302,
     FrostArmor: 168,

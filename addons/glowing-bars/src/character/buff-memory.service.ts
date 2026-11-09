@@ -38,7 +38,7 @@ export class BuffMemoryService {
         const name = auraName ?? (spellId !== undefined ? this.spells.getSpellLabel(spellId) : undefined);
         if (name === undefined || name === "") return;
         const key = buildNameKey(name);
-        const category = this.knowledge.findCategory(name);
+        const category = this.knowledge.findCategory(name, spellId);
         const seconds = category?.seconds ?? (this.knowledge.isFormKey(key) ? FORM_SECONDS : this.knowledge.getSeconds(spellId, name));
         const now = this.clock.getCurrentTime();
         const expires = this.findExpiry(key, now, seconds, remain, isFromCast);
@@ -58,7 +58,7 @@ export class BuffMemoryService {
         if (name === undefined || name === "") return false;
         const now = this.clock.getCurrentTime() + lead;
         if (now < (this.heldNames.get(buildNameKey(name)) ?? 0)) return true;
-        const category = this.knowledge.findCategory(name);
+        const category = this.knowledge.findCategory(name, spellId);
         return category !== undefined && now < (this.heldCategories.get(category.key) ?? 0);
     }
 
@@ -70,7 +70,7 @@ export class BuffMemoryService {
         const now = this.clock.getCurrentTime();
         if (now - (this.castAt.get(key) ?? -10) < CAST_SETTLE) return;
         this.heldNames.delete(key);
-        const category = this.knowledge.findCategory(name);
+        const category = this.knowledge.findCategory(name, spellId);
         if (category && !categoriesSeen?.has(category.key) && now - (this.castAt.get(category.key) ?? -10) >= CAST_SETTLE) {
             this.heldCategories.delete(category.key);
         }

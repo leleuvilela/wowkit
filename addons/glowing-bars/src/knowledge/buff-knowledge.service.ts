@@ -14,13 +14,19 @@ const FORMS = [Druid.BearForm, Druid.DireBearForm, Druid.CatForm, Druid.TravelFo
 export class BuffKnowledgeService {
     /** Aura key (the name in the client's language) -> its category; built from the spell IDs when first asked. */
     private categoryByName: LuaMap<string, BuffCategory> | undefined;
+    /** Listed spell IDs -> their category, independent of the client's translation. */
+    private readonly categoryById = new LuaMap<number, BuffCategory>();
     /** The aura keys of the shapeshift forms, in the client's language. */
     private formKeys: LuaSet<string> | undefined;
 
     constructor(
         private readonly classBuffs: ClassBuffsService,
         private readonly spells: SpellsService,
-    ) {}
+    ) {
+        for (const category of BUFF_CATEGORIES) {
+            for (const spellId of category.members) this.categoryById.set(spellId, category);
+        }
+    }
 
     @OnEvent("spells.invalidated")
     forgetNames(): void {
@@ -28,8 +34,10 @@ export class BuffKnowledgeService {
         this.formKeys = undefined;
     }
 
-    /** The category a buff belongs to, found by its name (in the client's language). */
-    findCategory(name: string | undefined): BuffCategory | undefined {
+    /** The category a buff belongs to: a listed ID first, then its name in the client's language. */
+    findCategory(name: string | undefined, spellId?: number): BuffCategory | undefined {
+        const category = spellId !== undefined ? this.categoryById.get(spellId) : undefined;
+        if (category !== undefined) return category;
         if (name === undefined || name === "") return undefined;
         return this.getCategoryNames().get(buildNameKey(name));
     }

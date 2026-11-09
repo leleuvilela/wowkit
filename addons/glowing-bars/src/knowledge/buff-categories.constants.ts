@@ -1,12 +1,12 @@
 // Buff categories: any member counts for the whole category. Some are exclusive (one aspect, one
 // armor), others pair a buff with its group version (Prayer of Fortitude counts as Fortitude).
 // The members are spell IDs; their names are read from the client, so the categories hold in every language. They are
-// matched by name, not by the aura's ID: the client often hides the aura ID in combat, and every rank has its own ID.
+// matched by ID when listed, then by localized name: the client often hides the aura ID in combat.
 import { Hunter as H, Mage as M, Paladin as P, Priest as Pr, Druid as D, Warlock as L, Tracking } from "@wowkit/wow-data";
 
 export interface BuffCategory {
     key: string;
-    /** The spells whose buffs count for each other (any rank: they share a name). */
+    /** The spells whose buffs count for each other; list ranks explicitly when their localized names differ. */
     members: number[];
     /** How long a seen or cast member counts as up while auras are hidden. */
     seconds: number;
@@ -65,5 +65,5 @@ export const BUFF_CATEGORIES: BuffCategory[] = [
     { key: "spirit", members: [Pr.DivineSpirit, ...Pr.PrayerOfSpirit], seconds: 1800 },
     { key: "shadowprotection", members: [Pr.ShadowProtection, ...Pr.PrayerOfShadowProtection], seconds: 600 },
     { key: "wild", members: [D.MarkOfTheWild, ...D.GiftOfTheWild], seconds: 1800 },
-    { key: "intellect", members: [M.ArcaneIntellect, ...M.ArcaneBrilliance], seconds: 1800 },
+    { key: "intellect", members: [...M.ArcaneIntellectRanks, ...M.ArcaneBrilliance], seconds: 1800 },
 ];

@@ -108,7 +108,7 @@ export class BuffStateService {
         const wantName = this.getBuffName(spellId);
         if (wantName === undefined) return "unknown";
         const wantKey = buildNameKey(wantName);
-        const wantCategory = this.knowledge.findCategory(wantName);
+        const wantCategory = this.knowledge.findCategory(wantName, spellId);
         const scan = this.auras.scanAuras(unit);
         let isUnreadable = scan.isUnreadable;
         for (const aura of scan.auras) {
@@ -146,7 +146,8 @@ export class BuffStateService {
     ): "has" | "hidden" | "other" {
         if (aura.isHidden || aura.name === undefined) return "hidden";
         const isWanted =
-            buildNameKey(aura.name) === wantKey || (wantCategory !== undefined && this.knowledge.findCategory(aura.name) === wantCategory);
+            buildNameKey(aura.name) === wantKey ||
+            (wantCategory !== undefined && this.knowledge.findCategory(aura.name, aura.spellId) === wantCategory);
         if (!isWanted) return "other";
         if (!isOwnOnly || aura.caster === "player") return "has";
         return aura.caster === "hidden" ? "hidden" : "other";
@@ -167,7 +168,7 @@ export class BuffStateService {
         const hasHiddenAura = scan.auras.some((aura) => aura.isHidden || aura.name === undefined);
         const isUnreadable = scan.isUnreadable || hasHiddenAura || (scan.auras.length === 0 && this.isEmptyListSuspicious());
         const { names, ids, categories } = this.indexAuras(scan.auras);
-        const wantCategory = this.knowledge.findCategory(wantName);
+        const wantCategory = this.knowledge.findCategory(wantName, spellId);
         const aura =
             (wantName !== undefined ? names.get(buildNameKey(wantName)) : undefined) ??
             (resolved !== undefined ? ids.get(resolved) : undefined) ??
@@ -191,7 +192,7 @@ export class BuffStateService {
             if (aura.spellId !== undefined) ids.set(aura.spellId, aura);
             if (aura.name === undefined) continue;
             names.set(buildNameKey(aura.name), aura);
-            const category = this.knowledge.findCategory(aura.name);
+            const category = this.knowledge.findCategory(aura.name, aura.spellId);
             if (category) categories.set(category.key, aura);
         }
         return { names, ids, categories };
